@@ -15,12 +15,6 @@ project("app" C CXX)
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
-add_library(fake_dlfcn
-        STATIC
-        fake_dlfcn.cpp
-        fake_dlfcn.hpp
-)
-
 add_library( # Sets the name of the library.
              app
 
@@ -29,11 +23,7 @@ add_library( # Sets the name of the library.
 
              # Provides a relative path to your source file(s).
              app.cpp
-        payload_dex_data.hpp
-)
-
-add_executable(app_exe
-        app_exe.cpp
+             payload_dex_data.hpp
 )
 
 # Searches for a specified prebuilt library and stores the path as a
