@@ -78,6 +78,14 @@ static auto set_context_class_loader(JNIEnv *env, jobject class_loader) -> void 
 }
 
 static auto get_default_namespace() -> android_namespace_t* {
+#if defined(__aarch64__)
+    static constexpr size_t ANDROID_GET_EXPORTED_NAMESPACE_OFFSET = 0x64bf0;
+#elif defined(__x86_64__)
+    static constexpr size_t ANDROID_GET_EXPORTED_NAMESPACE_OFFSET = 0x6b580;
+#else
+# error Unsupported architecture
+#endif
+
     auto *android_get_device_api_level = reinterpret_cast<uint8_t*>(
             dlsym(RTLD_DEFAULT, "android_get_device_api_level")
     );
@@ -87,7 +95,7 @@ static auto get_default_namespace() -> android_namespace_t* {
     }
 
     auto *android_get_exported_namespace = reinterpret_cast<AndroidGetExportedNamespace*>(
-            android_get_device_api_level + 0x6b580
+            android_get_device_api_level + ANDROID_GET_EXPORTED_NAMESPACE_OFFSET
     );
 
     return android_get_exported_namespace("default");
@@ -106,10 +114,11 @@ static auto inject(JavaVM *jvm, jobject class_loader) -> void {
     set_context_class_loader(env, class_loader);
 
     // Load the payload DEX to a ByteBuffer.
+    LOG("Loading the payload DEX");
     auto payload_dex_byte_buffer = env->NewDirectByteBuffer(payload_dex_data, payload_dex_data_len);
 
-    // Load the payload class from the APK.
-    LOG("Loading payload class");
+    // Load the payload class from the payload DEX.
+    LOG("Loading the payload class");
     auto payload_class = load_payload_class(env, class_loader, payload_dex_byte_buffer, PAYLOAD_CLASS);
 
     // Execute the payload method.
