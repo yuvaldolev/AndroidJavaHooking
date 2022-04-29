@@ -1,6 +1,7 @@
 package com.example.app;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +14,17 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.app.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import dalvik.system.DexFile;
+import dalvik.system.PathClassLoader;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
@@ -42,6 +54,81 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        listAllPackageClasses();
+    }
+
+    private void listAllPackageClasses() {
+        try {
+            PathClassLoader classLoader = (PathClassLoader) getClassLoader();
+            Object pathList = getFieldObject(classLoader, "pathList");
+            Object[] dexElements = (Object[]) getFieldObject(pathList, "dexElements");
+            List<DexFile> dexFiles = Arrays.stream(dexElements)
+                    .map(dexElement -> {
+                        try {
+                            return (DexFile) getFieldObject(dexElement, "dexFile");
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+
+                        return null;
+                    })
+                    .collect(Collectors.toList());
+
+            Set<String> classNames = new HashSet<>();
+            for (DexFile dexFile : dexFiles) {
+                Enumeration<String> entries = dexFile.entries();
+                while (entries.hasMoreElements()) {
+                    classNames.add(entries.nextElement());
+                }
+            }
+
+            for (String className : classNames) {
+                Log.d("test", className);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Object getFieldObject(Object instance, String fieldName)
+            throws NoSuchFieldException, IllegalAccessException {
+        Class<?> cls = instance.getClass();
+        while ((null != cls) && (Object.class != cls)) {
+            Object fieldObject = getFieldObject(cls, instance, fieldName);
+            if (null != fieldObject) {
+                // Found the requested field.
+                return fieldObject;
+            }
+
+            // Didn't find the requested field. Try searching the
+            // class's superclass.
+            cls = cls.getSuperclass();
+        }
+
+        throw new NoSuchFieldException(
+                "Class " + instance.getClass() + " does not contain a field named " + fieldName
+        );
+    }
+
+    private static Object getFieldObject(Class<?> cls, Object instance, String fieldName)
+            throws IllegalAccessException {
+        Object fieldObject = null;
+
+        try {
+            Field field = cls.getDeclaredField(fieldName);
+            boolean fieldAccessible = field.isAccessible();
+
+            try {
+                field.setAccessible(true);
+                fieldObject = field.get(instance);
+            } finally {
+                field.setAccessible(fieldAccessible);
+            }
+        } catch (NoSuchFieldException ignored) {
+        }
+
+        return fieldObject;
     }
 
     @Override

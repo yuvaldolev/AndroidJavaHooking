@@ -85,7 +85,7 @@ public class Payload {
     private static Object getFieldObject(Object instance, String fieldName) throws NoSuchFieldException, IllegalAccessException {
         Class<?> instanceClass = instance.getClass();
 
-        Field field = instanceClass.getDeclaredField("mActivities");
+        Field field = instanceClass.getDeclaredField(fieldName);
         boolean fieldAccessible = field.isAccessible();
 
         Object fieldObject;
