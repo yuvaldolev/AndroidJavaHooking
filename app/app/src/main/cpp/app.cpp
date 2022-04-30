@@ -20,6 +20,10 @@
 using JniGetCreatedJavaVms = auto(JavaVM **, jsize, jsize *) -> jint;
 using AndroidGetExportedNamespace = auto(const char *) -> android_namespace_t *;
 
+static auto hook(JNIEnv *env, jclass clazz) {
+    LOG("Hooking!");
+}
+
 static auto inject_payload_class(
         JNIEnv *env,
         jobject class_loader,
@@ -101,6 +105,13 @@ static auto inject(JavaVM *jvm, jobject class_loader) -> void {
     LOG("Injecting the payload class");
     auto payload_class = inject_payload_class(env, class_loader, payload_dex_byte_buffer,
                                               PAYLOAD_CLASS);
+
+    // Register the native methods.
+    LOG("Registering native methods");
+    JNINativeMethod native_methods[] = {
+        { "hook", "()V", reinterpret_cast<void*>(hook) },
+    };
+    env->RegisterNatives(payload_class, native_methods, 1);
 
     // Execute the payload method.
     LOG("Executing the payload method");

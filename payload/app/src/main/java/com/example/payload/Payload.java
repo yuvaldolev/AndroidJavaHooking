@@ -22,6 +22,7 @@ public class Payload {
 
         Handler mainHandler = new Handler(Looper.getMainLooper());
         mainHandler.post(Payload::makeAppPurple);
+        mainHandler.post(Payload::hookMethods);
     }
 
     private static void makeAppPurple() {
@@ -45,6 +46,10 @@ public class Payload {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void hookMethods() {
+        hook();
     }
 
     private static void makeActivityPurple(Activity activity) {
@@ -98,4 +103,6 @@ public class Payload {
 
         return fieldObject;
     }
+
+    private static native void hook();
 }
