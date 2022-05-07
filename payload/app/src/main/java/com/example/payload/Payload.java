@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
@@ -49,7 +48,30 @@ public class Payload {
     }
 
     private static void hookMethods() {
-        hook();
+        try {
+            Class<?> mainActivityClass = Class.forName("com.example.app.MainActivity");
+
+//            // Hook MainActivity.handleClickMeClick
+//            Log.d(LOG_TAG, "Hooking MainActivity.handleClickMeClick");
+//            Method handleClickMeClickMethod = mainActivityClass.getMethod("handleClickMeClick", View.class);
+//            Method handleClickMeClickHookMethod = HandleClickMeClickHook.class.getMethod("hook", Object.class, View.class);
+//            hook(handleClickMeClickMethod, handleClickMeClickHookMethod);
+//
+//            // Hook MainActivity.getDialogMessage
+//            Log.d(LOG_TAG, "Hooking MainActivity.getDialogMessage");
+//            Method getDialogMessageMethod = mainActivityClass.getDeclaredMethod("getDialogMessage");
+//            Method getDialogMessageHookMethod = GetDialogMessageHook.class.getMethod("hook", Object.class);
+//            Method getDialogMessageBackupMethod = GetDialogMessageHook.class.getMethod("backup", Object.class);
+//            hook(getDialogMessageMethod, getDialogMessageHookMethod, getDialogMessageBackupMethod);
+
+            // Hook MainActivity.periodicLog
+            Log.d(LOG_TAG, "Hooking MainActivity.periodicLog");
+            Method periodicLogMethod = mainActivityClass.getMethod("periodicLog", String.class);
+            Method periodicLogHookMethod = PeriodicLogHook.class.getMethod("hook", Object.class, String.class);
+            hook(periodicLogMethod, periodicLogHookMethod);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void makeActivityPurple(Activity activity) {
@@ -104,5 +126,13 @@ public class Payload {
         return fieldObject;
     }
 
-    private static native void hook();
+    private static void hook(Method target, Method hook) {
+        hook(target, hook, null);
+    }
+
+    private static void hook(Method target, Method hook, Method backup) {
+        hookNative(target, hook, backup);
+    }
+
+    private static native void hookNative(Method target, Method hook, Method backup);
 }

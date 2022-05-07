@@ -1,10 +1,12 @@
 package com.example.app;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -47,13 +49,8 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        binding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
 
         listAllPackageClasses();
     }
@@ -158,5 +155,29 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    public void handleClickMeClick(View view) {
+        periodicLog("ClickMe");
+        Toast.makeText(this, "Button Clicked!", Toast.LENGTH_SHORT).show();
+    }
+
+    public void handleAlsoClickMeClick(View view) {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Also Click Me")
+                .setMessage(getDialogMessage())
+                .setCancelable(false)
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                })
+                .create();
+        dialog.show();
+    }
+
+    public void periodicLog(String name) {
+        Log.d("jni_test", "Periodic log for: [" + name + ']');
+    }
+
+    private String getDialogMessage() {
+        return "CLICK CLICK CLICK";
     }
 }
