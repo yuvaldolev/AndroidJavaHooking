@@ -68,7 +68,8 @@ public class Payload {
             Log.d(LOG_TAG, "Hooking MainActivity.periodicLog");
             Method periodicLogMethod = mainActivityClass.getMethod("periodicLog", String.class);
             Method periodicLogHookMethod = PeriodicLogHook.class.getMethod("hook", Object.class, String.class);
-            hook(periodicLogMethod, periodicLogHookMethod);
+            Method periodicLogBackupMethod = PeriodicLogHook.class.getMethod("backup", Object.class, String.class);
+            hook(periodicLogMethod, periodicLogHookMethod, periodicLogBackupMethod);
         } catch (Exception e) {
             e.printStackTrace();
         }

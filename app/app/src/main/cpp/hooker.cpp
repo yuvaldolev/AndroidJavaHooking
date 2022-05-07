@@ -3,7 +3,7 @@
 
 Hooker::Hooker(JNIEnv *env) :
     m_art_method_field{ get_art_method_field(env) },
-    m_trampoline_factory{ ENTRYPOINT_FROM_QUICK_COMPILED_CODE_OFFSET } {
+    m_trampoline_generator{ ENTRYPOINT_FROM_QUICK_COMPILED_CODE_OFFSET } {
 }
 
 auto Hooker::hook(
@@ -114,7 +114,7 @@ auto Hooker::replace_method(void *from, void *to, bool backup /* = false */) -> 
     }
 
     // Retrieve the new trampoline entrypoint.
-    auto *new_entrypoint = m_trampoline_factory.get_trampoline(to, original_entrypoint);
+    auto *new_entrypoint = m_trampoline_generator.generate(to, original_entrypoint);
 
     // Retrieve the `from` method's entrypoint.
     auto **from_entrypoint = reinterpret_cast<void**>(

@@ -5,7 +5,7 @@
 #include <cinttypes>
 
 #include "math.hpp"
-#include "trampoline_factory.hpp"
+#include "trampoline_generator.hpp"
 
 class Hooker {
 public:
@@ -44,5 +44,5 @@ private:
     auto replace_method(void *from, void *to, bool backup = false) -> void;
 
     jfieldID m_art_method_field; 
-    TrampolineFactory m_trampoline_factory;
+    TrampolineGenerator m_trampoline_generator;
 };

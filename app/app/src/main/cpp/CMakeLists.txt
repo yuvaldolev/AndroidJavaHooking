@@ -11,8 +11,8 @@ add_library(app
         log.hpp
         math.hpp
         payload_dex_data.hpp
-        trampoline_factory.cpp
-        trampoline_factory.hpp
+        trampoline_generator.cpp
+        trampoline_generator.hpp
 )
 
 set_property(TARGET app PROPERTY CXX_STANDARD 20)

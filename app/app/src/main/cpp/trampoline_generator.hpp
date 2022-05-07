@@ -3,13 +3,13 @@
 #include <cinttypes>
 #include <memory>
 
-class TrampolineFactory {
+class TrampolineGenerator {
 public:
     static constexpr size_t TRAMPOLINE_MEMORY_SIZE = 4096;
 
-    TrampolineFactory(uint8_t entrypoint_offset);
+    TrampolineGenerator(uint8_t entrypoint_offset);
 
-    auto get_trampoline(void *method, void *entrypoint = nullptr) -> void*;
+    auto generate(void *method, void *entrypoint = nullptr) -> void*;
 
 private:
     static auto allocate_trampoline_memory() -> void*;

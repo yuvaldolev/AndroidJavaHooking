@@ -4,7 +4,7 @@
 #include <cstring>
 #include <system_error>
 
-#include "trampoline_factory.hpp"
+#include "trampoline_generator.hpp"
 #include "math.hpp"
 
 // Trampoline:
@@ -115,7 +115,7 @@ const uint8_t backup_trampoline[] = {
 # error Unsupported architecture
 #endif
 
-TrampolineFactory::TrampolineFactory(uint8_t entrypoint_offset) :
+TrampolineGenerator::TrampolineGenerator(uint8_t entrypoint_offset) :
     m_trampoline_size{ sizeof(trampoline) },
     m_trampoline{ std::make_unique<uint8_t[]>(m_trampoline_size) },
     m_backup_trampoline_size{ sizeof(backup_trampoline) },
@@ -140,7 +140,7 @@ TrampolineFactory::TrampolineFactory(uint8_t entrypoint_offset) :
 #endif
 }
 
-auto TrampolineFactory::get_trampoline(void *method, void *entrypoint /* = nullptr */) -> void* {
+auto TrampolineGenerator::generate(void *method, void *entrypoint /* = nullptr */) -> void* {
     // Determine which trampoline should be retreived, the regular
     // trampoline or the backup trampoline.
     uint8_t *trampoline;
@@ -208,7 +208,7 @@ auto TrampolineFactory::get_trampoline(void *method, void *entrypoint /* = nullp
     return result_trampoline;
 }
 
-auto TrampolineFactory::allocate_trampoline_memory() -> void* {
+auto TrampolineGenerator::allocate_trampoline_memory() -> void* {
     auto *trampoline_memory = mmap(
             nullptr,
             TRAMPOLINE_MEMORY_SIZE,
