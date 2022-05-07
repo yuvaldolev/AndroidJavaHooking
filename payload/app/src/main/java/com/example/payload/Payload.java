@@ -19,9 +19,11 @@ public class Payload {
     public static void start() {
         Log.i(LOG_TAG, "Payload is RUNNING!!!!!!");
 
+        hookMethods();
+
         Handler mainHandler = new Handler(Looper.getMainLooper());
         mainHandler.post(Payload::makeAppPurple);
-        mainHandler.post(Payload::hookMethods);
+//        mainHandler.post(Payload::hookMethods);
     }
 
     private static void makeAppPurple() {
@@ -67,8 +69,9 @@ public class Payload {
             // Hook MainActivity.periodicLog
             Log.d(LOG_TAG, "Hooking MainActivity.periodicLog");
             Method periodicLogMethod = mainActivityClass.getMethod("periodicLog", String.class);
-            Method periodicLogHookMethod = PeriodicLogHook.class.getMethod("hook", Object.class, String.class);
-            Method periodicLogBackupMethod = PeriodicLogHook.class.getMethod("backup", Object.class, String.class);
+//            Class<?> periodicLogHookClass = Class.forName("com.example.payload.PeriodicLogHook");
+            Method periodicLogHookMethod = mainActivityClass.getMethod("hook", Object.class, String.class);
+            Method periodicLogBackupMethod = mainActivityClass.getMethod("backup", Object.class, String.class);
             hook(periodicLogMethod, periodicLogHookMethod, periodicLogBackupMethod);
         } catch (Exception e) {
             e.printStackTrace();

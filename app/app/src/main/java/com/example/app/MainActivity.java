@@ -177,6 +177,14 @@ public class MainActivity extends AppCompatActivity {
         Log.d("jni_test", "Periodic log for: [" + name + ']');
     }
 
+    public static void hook(Object thiz, String name) {
+        backup(thiz, name + "-hook");
+    }
+
+    public static void backup(Object thiz, String name) {
+        throw new UnsupportedOperationException("Backup method should have been replaced!");
+    }
+
     private String getDialogMessage() {
         return "CLICK CLICK CLICK";
     }
