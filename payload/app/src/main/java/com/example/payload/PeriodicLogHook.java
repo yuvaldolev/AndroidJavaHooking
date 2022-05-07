@@ -8,6 +8,6 @@ public class PeriodicLogHook {
     }
 
     public static void backup(Object thiz, String name) {
-        throw new UnsupportedOperationException("Backup method should have been replaced!");
+        Log.e("jni_test", "Backup method should have been replaced!");
     }
 }
